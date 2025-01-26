@@ -1,0 +1,39 @@
+-- {{{ Menu
+local myawesomemenu = {
+    { "hotkeys", function() hotkeys_popup.show_help(nil, awful.screen.focused()) end },
+    { "manual", terminal .. " -e man awesome" },
+    { "edit config", editor_cmd .. " " .. awesome.conffile },
+    { "restart", awesome.restart },
+    { "quit", function() awesome.quit() end },
+}
+
+local mymainmenu = awful.menu({
+    items = {
+        { "awesome", myawesomemenu, beautiful.awesome_icon },
+        { "open terminal", terminal },
+    },
+})
+
+local mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon, menu = mymainmenu })
+menubar.utils.terminal = terminal
+-- }}}
+
+-- {{{ Wibar
+local logout_menu_widget = require("awesome-wm-widgets.logout-menu-widget.logout-menu")
+
+awful.screen.connect_for_each_screen(function(s)
+    -- Set wallpaper
+    local function set_wallpaper(s)
+        if beautiful.wallpaper then
+            local wallpaper = beautiful.wallpaper
+            if type(wallpaper) == "function" then
+                wallpaper = wallpaper(s)
+            end
+            gears.wallpaper.maximized(wallpaper, s, true)
+        end
+    end
+
+    set_wallpaper(s)
+    screen.connect_signal("property::geometry", set_wallpaper)
+
+    -- Tags
